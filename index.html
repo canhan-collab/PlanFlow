@@ -2,183 +2,310 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PlanFlow - Quản lý công việc</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
-    body {
-      background: #f5f7fb;
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
     }
 
-    .tab-btn.active {
-      background: #2563eb;
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 20px;
+    }
+
+    .calendar-day {
+      min-height: 120px;
+    }
+
+    .active-tab {
+      background: #111827;
       color: white;
     }
 
-    .card {
-      background: white;
-      border-radius: 18px;
-      padding: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-
-    .priority-high {
-      color: #dc2626;
-      font-weight: 700;
-    }
-
-    .priority-medium {
-      color: #d97706;
-      font-weight: 700;
-    }
-
-    .priority-low {
-      color: #16a34a;
-      font-weight: 700;
-    }
-
-    .status-done {
-      color: #16a34a;
-      font-weight: 700;
-    }
-
-    .status-progress {
-      color: #2563eb;
-      font-weight: 700;
-    }
-
-    .status-pending {
-      color: #6b7280;
-      font-weight: 700;
-    }
-
-    .status-pause {
-      color: #d97706;
-      font-weight: 700;
+    .modal-bg {
+      backdrop-filter: blur(4px);
     }
   </style>
 </head>
 
-<body class="min-h-screen">
+<body class="bg-slate-100 text-slate-800">
 
-<div class="max-w-7xl mx-auto p-3 md:p-6">
+  <div class="min-h-screen flex flex-col">
 
-  <!-- HEADER -->
-  <div class="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
-    <div>
-      <h1 class="text-3xl font-bold text-blue-600">PlanFlow</h1>
-      <p class="text-gray-500">Quản lý kế hoạch công việc thông minh</p>
-    </div>
-
-    <div class="flex gap-3 flex-wrap items-center">
-      <button onclick="resetData()"
-        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl">
-        Reset dữ liệu
-      </button>
-
-      <div id="qrcode" class="bg-white p-2 rounded-xl shadow"></div>
-    </div>
-  </div>
-
-  <!-- TABS -->
-  <div class="flex flex-wrap gap-2 mb-6">
-    <button class="tab-btn active px-4 py-2 rounded-xl bg-white shadow" onclick="showTab('dashboard')">Dashboard</button>
-    <button class="tab-btn px-4 py-2 rounded-xl bg-white shadow" onclick="showTab('tasks')">Công việc</button>
-    <button class="tab-btn px-4 py-2 rounded-xl bg-white shadow" onclick="showTab('week')">Tuần</button>
-    <button class="tab-btn px-4 py-2 rounded-xl bg-white shadow" onclick="showTab('month')">Tháng</button>
-    <button class="tab-btn px-4 py-2 rounded-xl bg-white shadow" onclick="showTab('report')">Báo cáo</button>
-  </div>
-
-  <!-- DASHBOARD -->
-  <div id="dashboard" class="tab-content">
-
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-
-      <div class="card text-center">
-        <h2 class="text-gray-500">Tổng việc</h2>
-        <p id="totalTasks" class="text-3xl font-bold text-blue-600">0</p>
-      </div>
-
-      <div class="card text-center">
-        <h2 class="text-gray-500">Hoàn thành</h2>
-        <p id="completedTasks" class="text-3xl font-bold text-green-600">0</p>
-      </div>
-
-      <div class="card text-center">
-        <h2 class="text-gray-500">Đang làm</h2>
-        <p id="progressTasks" class="text-3xl font-bold text-blue-500">0</p>
-      </div>
-
-      <div class="card text-center">
-        <h2 class="text-gray-500">Quá hạn</h2>
-        <p id="overdueTasks" class="text-3xl font-bold text-red-500">0</p>
-      </div>
-
-      <div class="card text-center">
-        <h2 class="text-gray-500">Tỷ lệ</h2>
-        <p id="completionRate" class="text-3xl font-bold text-purple-600">0%</p>
-      </div>
-
-    </div>
-
-    <div class="card">
-      <h2 class="font-bold mb-4">Tiến độ công việc</h2>
-
-      <div class="w-full bg-gray-200 rounded-full h-5 overflow-hidden">
-        <div id="progressBar"
-          class="bg-blue-600 h-5 transition-all duration-500"
-          style="width:0%"></div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- TASKS -->
-  <div id="tasks" class="tab-content hidden">
-
-    <div class="card mb-5">
-
-      <div class="grid md:grid-cols-2 gap-3">
-
-        <input id="taskName" placeholder="Tên công việc"
-          class="border p-3 rounded-xl">
-
-        <input id="taskGroup" placeholder="Nhóm công việc"
-          class="border p-3 rounded-xl">
-
-        <textarea id="taskDesc"
-          placeholder="Mô tả"
-          class="border p-3 rounded-xl"></textarea>
-
-        <textarea id="taskNote"
-          placeholder="Ghi chú"
-          class="border p-3 rounded-xl"></textarea>
+    <!-- HEADER -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
 
         <div>
-          <label class="text-sm text-gray-500">Ngày bắt đầu</label>
-          <input id="taskStart" type="date"
-            class="border p-3 rounded-xl w-full">
+          <h1 class="text-2xl font-bold">🚀 PlanFlow</h1>
+          <p class="text-sm text-slate-500">Theo dõi kế hoạch công việc</p>
         </div>
 
-        <div>
-          <label class="text-sm text-gray-500">Hạn hoàn thành</label>
-          <input id="taskEnd" type="date"
-            class="border p-3 rounded-xl w-full">
+        <div class="flex items-center gap-2">
+          <button onclick="openTaskModal()"
+            class="bg-black text-white px-4 py-2 rounded-xl hover:opacity-90">
+            + Thêm việc
+          </button>
         </div>
+      </div>
+    </header>
+
+    <!-- NAV -->
+    <div class="bg-white border-b">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex gap-2 overflow-auto">
+
+        <button class="tab-btn active-tab px-4 py-2 rounded-xl"
+          data-tab="dashboard">Dashboard</button>
+
+        <button class="tab-btn px-4 py-2 rounded-xl bg-slate-100"
+          data-tab="tasks">Công việc</button>
+
+        <button class="tab-btn px-4 py-2 rounded-xl bg-slate-100"
+          data-tab="week">Tuần</button>
+
+        <button class="tab-btn px-4 py-2 rounded-xl bg-slate-100"
+          data-tab="month">Tháng</button>
+
+        <button class="tab-btn px-4 py-2 rounded-xl bg-slate-100"
+          data-tab="report">Báo cáo</button>
+
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <main class="flex-1 max-w-7xl mx-auto w-full p-4">
+
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="tab-content">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+
+          <div class="bg-white rounded-2xl p-5 shadow">
+            <p class="text-sm text-slate-500">Tổng việc</p>
+            <h2 id="totalTasks" class="text-3xl font-bold mt-2">0</h2>
+          </div>
+
+          <div class="bg-white rounded-2xl p-5 shadow">
+            <p class="text-sm text-slate-500">Hoàn thành</p>
+            <h2 id="completedTasks" class="text-3xl font-bold text-green-600 mt-2">0</h2>
+          </div>
+
+          <div class="bg-white rounded-2xl p-5 shadow">
+            <p class="text-sm text-slate-500">Đang làm</p>
+            <h2 id="doingTasks" class="text-3xl font-bold text-blue-600 mt-2">0</h2>
+          </div>
+
+          <div class="bg-white rounded-2xl p-5 shadow">
+            <p class="text-sm text-slate-500">Quá hạn</p>
+            <h2 id="overdueTasks" class="text-3xl font-bold text-red-600 mt-2">0</h2>
+          </div>
+
+          <div class="bg-white rounded-2xl p-5 shadow">
+            <p class="text-sm text-slate-500">Tỷ lệ HT</p>
+            <h2 id="completionRate" class="text-3xl font-bold text-purple-600 mt-2">0%</h2>
+          </div>
+
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 mt-6">
+
+          <div class="bg-white p-5 rounded-2xl shadow">
+            <h3 class="font-semibold mb-4">Tiến độ công việc</h3>
+            <canvas id="statusChart"></canvas>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl shadow">
+            <h3 class="font-semibold mb-4">Ưu tiên công việc</h3>
+            <canvas id="priorityChart"></canvas>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TASKS -->
+      <section id="tasks" class="tab-content hidden">
+
+        <div class="bg-white p-4 rounded-2xl shadow mb-5">
+
+          <div class="grid md:grid-cols-5 gap-3">
+
+            <input id="searchInput"
+              type="text"
+              placeholder="🔍 Tìm kiếm..."
+              class="border rounded-xl px-3 py-2 w-full" />
+
+            <select id="statusFilter"
+              class="border rounded-xl px-3 py-2">
+              <option value="">Tất cả trạng thái</option>
+              <option>Chưa bắt đầu</option>
+              <option>Đang làm</option>
+              <option>Hoàn thành</option>
+              <option>Tạm hoãn</option>
+            </select>
+
+            <select id="priorityFilter"
+              class="border rounded-xl px-3 py-2">
+              <option value="">Tất cả ưu tiên</option>
+              <option>Cao</option>
+              <option>Trung bình</option>
+              <option>Thấp</option>
+            </select>
+
+            <input id="groupFilter"
+              type="text"
+              placeholder="Nhóm công việc"
+              class="border rounded-xl px-3 py-2" />
+
+            <button onclick="renderTasks()"
+              class="bg-black text-white rounded-xl px-4 py-2">
+              Lọc
+            </button>
+
+          </div>
+
+        </div>
+
+        <div id="taskList"
+          class="grid md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+
+      </section>
+
+      <!-- WEEK -->
+      <section id="week" class="tab-content hidden">
+
+        <div class="bg-white p-5 rounded-2xl shadow">
+
+          <h2 class="font-bold text-xl mb-5">
+            📅 Kế hoạch tuần
+          </h2>
+
+          <div id="weekView"
+            class="grid grid-cols-1 md:grid-cols-7 gap-4"></div>
+
+        </div>
+
+      </section>
+
+      <!-- MONTH -->
+      <section id="month" class="tab-content hidden">
+
+        <div class="bg-white p-5 rounded-2xl shadow">
+
+          <h2 class="font-bold text-xl mb-5">
+            🗓️ Kế hoạch tháng
+          </h2>
+
+          <div class="grid grid-cols-7 gap-2 mb-2 text-center font-semibold text-sm">
+            <div>T2</div>
+            <div>T3</div>
+            <div>T4</div>
+            <div>T5</div>
+            <div>T6</div>
+            <div>T7</div>
+            <div>CN</div>
+          </div>
+
+          <div id="calendar"
+            class="grid grid-cols-7 gap-2"></div>
+
+        </div>
+
+      </section>
+
+      <!-- REPORT -->
+      <section id="report" class="tab-content hidden">
+
+        <div class="grid md:grid-cols-2 gap-6">
+
+          <div class="bg-white p-5 rounded-2xl shadow">
+            <h3 class="font-semibold mb-4">
+              Hiệu suất theo trạng thái
+            </h3>
+            <canvas id="reportChart"></canvas>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl shadow">
+            <h3 class="font-semibold mb-4">
+              Tiến độ hoàn thành
+            </h3>
+
+            <div class="space-y-4">
+
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span>Hoàn thành</span>
+                  <span id="progressPercent">0%</span>
+                </div>
+
+                <div class="w-full bg-slate-200 rounded-full h-4">
+                  <div id="progressBar"
+                    class="bg-green-500 h-4 rounded-full"
+                    style="width:0%">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div id="taskModal"
+    class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50 modal-bg">
+
+    <div class="bg-white rounded-2xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-auto">
+
+      <div class="flex justify-between items-center mb-5">
+        <h2 id="modalTitle"
+          class="text-2xl font-bold">
+          Thêm công việc
+        </h2>
+
+        <button onclick="closeTaskModal()"
+          class="text-xl">✕</button>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+
+        <input id="taskName"
+          type="text"
+          placeholder="Tên công việc"
+          class="border rounded-xl px-3 py-2" />
+
+        <input id="taskGroup"
+          type="text"
+          placeholder="Nhóm công việc"
+          class="border rounded-xl px-3 py-2" />
+
+        <input id="taskStart"
+          type="date"
+          class="border rounded-xl px-3 py-2" />
+
+        <input id="taskDeadline"
+          type="date"
+          class="border rounded-xl px-3 py-2" />
 
         <select id="taskPriority"
-          class="border p-3 rounded-xl">
+          class="border rounded-xl px-3 py-2">
           <option>Cao</option>
           <option selected>Trung bình</option>
           <option>Thấp</option>
         </select>
 
         <select id="taskStatus"
-          class="border p-3 rounded-xl">
+          class="border rounded-xl px-3 py-2">
           <option>Chưa bắt đầu</option>
           <option>Đang làm</option>
           <option>Hoàn thành</option>
@@ -187,404 +314,496 @@
 
       </div>
 
-      <button onclick="addTask()"
-        class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl">
-        Thêm công việc
-      </button>
+      <textarea id="taskDescription"
+        placeholder="Mô tả"
+        class="border rounded-xl px-3 py-2 mt-4 w-full h-24"></textarea>
 
-    </div>
+      <textarea id="taskNotes"
+        placeholder="Ghi chú"
+        class="border rounded-xl px-3 py-2 mt-4 w-full h-24"></textarea>
 
-    <!-- FILTER -->
-    <div class="flex flex-wrap gap-3 mb-4">
+      <div class="flex justify-end gap-3 mt-5">
 
-      <input id="searchInput"
-        onkeyup="renderTasks()"
-        placeholder="Tìm kiếm công việc..."
-        class="border p-3 rounded-xl flex-1">
+        <button onclick="closeTaskModal()"
+          class="px-4 py-2 rounded-xl border">
+          Hủy
+        </button>
 
-      <select id="filterStatus"
-        onchange="renderTasks()"
-        class="border p-3 rounded-xl">
-        <option value="">Tất cả trạng thái</option>
-        <option>Chưa bắt đầu</option>
-        <option>Đang làm</option>
-        <option>Hoàn thành</option>
-        <option>Tạm hoãn</option>
-      </select>
+        <button onclick="saveTask()"
+          class="bg-black text-white px-4 py-2 rounded-xl">
+          Lưu công việc
+        </button>
 
-      <select id="filterPriority"
-        onchange="renderTasks()"
-        class="border p-3 rounded-xl">
-        <option value="">Tất cả ưu tiên</option>
-        <option>Cao</option>
-        <option>Trung bình</option>
-        <option>Thấp</option>
-      </select>
-
-    </div>
-
-    <div id="taskList" class="grid gap-4"></div>
-
-  </div>
-
-  <!-- WEEK -->
-  <div id="week" class="tab-content hidden">
-    <div class="grid md:grid-cols-7 gap-3" id="weekView"></div>
-  </div>
-
-  <!-- MONTH -->
-  <div id="month" class="tab-content hidden">
-
-    <div class="card">
-      <h2 class="text-xl font-bold mb-4">Lịch tháng</h2>
-
-      <div class="grid grid-cols-7 gap-2 text-center font-bold mb-3">
-        <div>T2</div>
-        <div>T3</div>
-        <div>T4</div>
-        <div>T5</div>
-        <div>T6</div>
-        <div>T7</div>
-        <div>CN</div>
       </div>
 
-      <div id="monthView" class="grid grid-cols-7 gap-2"></div>
     </div>
-
   </div>
 
-  <!-- REPORT -->
-  <div id="report" class="tab-content hidden">
+  <script>
 
-    <div class="card">
-      <h2 class="font-bold mb-4">Hiệu suất công việc</h2>
-      <canvas id="reportChart"></canvas>
-    </div>
+    let tasks = JSON.parse(localStorage.getItem("planflow_tasks")) || [
+      {
+        id: 1,
+        name: "Thiết kế giao diện app",
+        description: "Hoàn thiện UI/UX",
+        startDate: "2026-05-22",
+        deadline: "2026-05-28",
+        priority: "Cao",
+        status: "Đang làm",
+        group: "Công việc",
+        notes: "Ưu tiên mobile"
+      },
+      {
+        id: 2,
+        name: "Quay video TikTok",
+        description: "Video chia sẻ dược lâm sàng",
+        startDate: "2026-05-23",
+        deadline: "2026-05-25",
+        priority: "Trung bình",
+        status: "Chưa bắt đầu",
+        group: "Content",
+        notes: ""
+      },
+      {
+        id: 3,
+        name: "Hoàn thành báo cáo",
+        description: "Báo cáo tháng",
+        startDate: "2026-05-20",
+        deadline: "2026-05-21",
+        priority: "Cao",
+        status: "Hoàn thành",
+        group: "Báo cáo",
+        notes: ""
+      }
+    ];
 
-  </div>
+    let editingId = null;
 
-</div>
+    function saveToStorage() {
+      localStorage.setItem("planflow_tasks", JSON.stringify(tasks));
+    }
 
-<script>
+    function openTaskModal(task = null) {
 
-let tasks = JSON.parse(localStorage.getItem("planflow_tasks")) || [
-  {
-    id: 1,
-    name: "Hoàn thiện báo cáo",
-    desc: "Chuẩn bị báo cáo tuần",
-    start: "2026-05-20",
-    end: "2026-05-25",
-    priority: "Cao",
-    status: "Đang làm",
-    group: "Công việc",
-    note: "Ưu tiên xử lý"
-  },
-  {
-    id: 2,
-    name: "Học React",
-    desc: "Luyện React nâng cao",
-    start: "2026-05-18",
-    end: "2026-05-30",
-    priority: "Trung bình",
-    status: "Chưa bắt đầu",
-    group: "Học tập",
-    note: ""
-  }
-];
+      document.getElementById("taskModal").classList.remove("hidden");
+      document.getElementById("taskModal").classList.add("flex");
 
-function saveTasks() {
-  localStorage.setItem("planflow_tasks", JSON.stringify(tasks));
-}
+      if (task) {
 
-function showTab(tabId) {
+        editingId = task.id;
 
-  document.querySelectorAll(".tab-content").forEach(el => {
-    el.classList.add("hidden");
-  });
+        document.getElementById("modalTitle").innerText = "Sửa công việc";
 
-  document.getElementById(tabId).classList.remove("hidden");
+        taskName.value = task.name;
+        taskDescription.value = task.description;
+        taskStart.value = task.startDate;
+        taskDeadline.value = task.deadline;
+        taskPriority.value = task.priority;
+        taskStatus.value = task.status;
+        taskGroup.value = task.group;
+        taskNotes.value = task.notes;
 
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.classList.remove("active");
-  });
+      } else {
 
-  event.target.classList.add("active");
-}
+        editingId = null;
 
-function addTask() {
+        document.getElementById("modalTitle").innerText = "Thêm công việc";
 
-  const task = {
-    id: Date.now(),
-    name: taskName.value,
-    desc: taskDesc.value,
-    start: taskStart.value,
-    end: taskEnd.value,
-    priority: taskPriority.value,
-    status: taskStatus.value,
-    group: taskGroup.value,
-    note: taskNote.value
-  };
+        taskName.value = "";
+        taskDescription.value = "";
+        taskStart.value = "";
+        taskDeadline.value = "";
+        taskPriority.value = "Trung bình";
+        taskStatus.value = "Chưa bắt đầu";
+        taskGroup.value = "";
+        taskNotes.value = "";
+      }
+    }
 
-  tasks.push(task);
+    function closeTaskModal() {
+      document.getElementById("taskModal").classList.add("hidden");
+      document.getElementById("taskModal").classList.remove("flex");
+    }
 
-  saveTasks();
-  renderAll();
+    function saveTask() {
 
-  document.querySelectorAll("input, textarea").forEach(i => i.value = "");
-}
+      const task = {
+        id: editingId || Date.now(),
+        name: taskName.value,
+        description: taskDescription.value,
+        startDate: taskStart.value,
+        deadline: taskDeadline.value,
+        priority: taskPriority.value,
+        status: taskStatus.value,
+        group: taskGroup.value,
+        notes: taskNotes.value
+      };
 
-function deleteTask(id) {
-  tasks = tasks.filter(t => t.id !== id);
-  saveTasks();
-  renderAll();
-}
+      if (!task.name) {
+        alert("Vui lòng nhập tên công việc");
+        return;
+      }
 
-function renderTasks() {
+      if (editingId) {
 
-  const list = document.getElementById("taskList");
+        tasks = tasks.map(t => t.id === editingId ? task : t);
 
-  const search = searchInput.value.toLowerCase();
-  const statusFilter = filterStatus.value;
-  const priorityFilter = filterPriority.value;
+      } else {
 
-  const filtered = tasks.filter(t => {
+        tasks.push(task);
+      }
 
-    const matchSearch =
-      t.name.toLowerCase().includes(search) ||
-      t.group.toLowerCase().includes(search);
+      saveToStorage();
 
-    const matchStatus =
-      !statusFilter || t.status === statusFilter;
+      closeTaskModal();
 
-    const matchPriority =
-      !priorityFilter || t.priority === priorityFilter;
+      renderAll();
+    }
 
-    return matchSearch && matchStatus && matchPriority;
-  });
+    function deleteTask(id) {
 
-  list.innerHTML = "";
+      if (!confirm("Xóa công việc này?")) return;
 
-  filtered.forEach(task => {
+      tasks = tasks.filter(t => t.id !== id);
 
-    let priorityClass = "priority-medium";
+      saveToStorage();
 
-    if(task.priority === "Cao") priorityClass = "priority-high";
-    if(task.priority === "Thấp") priorityClass = "priority-low";
+      renderAll();
+    }
 
-    let statusClass = "status-pending";
+    function renderTasks() {
 
-    if(task.status === "Đang làm") statusClass = "status-progress";
-    if(task.status === "Hoàn thành") statusClass = "status-done";
-    if(task.status === "Tạm hoãn") statusClass = "status-pause";
+      const keyword = searchInput.value.toLowerCase();
+      const status = statusFilter.value;
+      const priority = priorityFilter.value;
+      const group = groupFilter.value.toLowerCase();
 
-    list.innerHTML += `
-      <div class="card">
+      const filtered = tasks.filter(task => {
 
-        <div class="flex justify-between items-start gap-3">
+        return (
+          task.name.toLowerCase().includes(keyword) &&
+          (!status || task.status === status) &&
+          (!priority || task.priority === priority) &&
+          (!group || task.group.toLowerCase().includes(group))
+        );
+      });
 
-          <div class="flex-1">
+      taskList.innerHTML = "";
 
-            <h3 class="text-xl font-bold">${task.name}</h3>
+      if (filtered.length === 0) {
+        taskList.innerHTML = `
+          <div class="bg-white rounded-2xl p-6 shadow">
+            Không có công việc phù hợp
+          </div>
+        `;
+        return;
+      }
 
-            <p class="text-gray-600 mt-1">${task.desc}</p>
+      filtered.forEach(task => {
 
-            <div class="flex flex-wrap gap-3 mt-3 text-sm">
+        const overdue =
+          new Date(task.deadline) < new Date() &&
+          task.status !== "Hoàn thành";
 
-              <span class="${priorityClass}">
-                Ưu tiên: ${task.priority}
-              </span>
+        taskList.innerHTML += `
 
-              <span class="${statusClass}">
-                ${task.status}
-              </span>
+          <div class="bg-white rounded-2xl p-5 shadow flex flex-col">
 
-              <span class="text-gray-500">
-                ${task.group}
+            <div class="flex justify-between items-start">
+
+              <div>
+                <h3 class="font-bold text-lg">${task.name}</h3>
+
+                <p class="text-sm text-slate-500 mt-1">
+                  ${task.group}
+                </p>
+              </div>
+
+              <span class="text-xs px-2 py-1 rounded-full
+                ${task.priority === 'Cao'
+                  ? 'bg-red-100 text-red-600'
+                  : task.priority === 'Trung bình'
+                  ? 'bg-yellow-100 text-yellow-700'
+                  : 'bg-green-100 text-green-700'}">
+
+                ${task.priority}
               </span>
 
             </div>
 
-            <div class="mt-2 text-sm text-gray-500">
-              ${task.start} → ${task.end}
+            <p class="mt-4 text-sm">
+              ${task.description}
+            </p>
+
+            <div class="mt-4 space-y-1 text-sm">
+
+              <p>📅 Bắt đầu: ${task.startDate}</p>
+              <p>⏰ Hạn: ${task.deadline}</p>
+
+              <p>
+                📌 Trạng thái:
+                <span class="font-semibold">
+                  ${task.status}
+                </span>
+              </p>
+
+              ${overdue
+                ? `<p class="text-red-600 font-semibold">⚠️ Quá hạn</p>`
+                : ""}
+
             </div>
 
-            <div class="mt-2 text-sm italic text-gray-400">
-              ${task.note || ""}
+            <div class="mt-4 bg-slate-50 rounded-xl p-3 text-sm">
+              📝 ${task.notes || "Không có ghi chú"}
+            </div>
+
+            <div class="mt-5 flex gap-2">
+
+              <button onclick='openTaskModal(${JSON.stringify(task)})'
+                class="flex-1 border rounded-xl py-2">
+                Sửa
+              </button>
+
+              <button onclick="deleteTask(${task.id})"
+                class="flex-1 bg-red-500 text-white rounded-xl py-2">
+                Xóa
+              </button>
+
             </div>
 
           </div>
-
-          <button onclick="deleteTask(${task.id})"
-            class="bg-red-500 text-white px-3 py-2 rounded-lg">
-            Xóa
-          </button>
-
-        </div>
-
-      </div>
-    `;
-
-  });
-
-}
-
-function renderDashboard() {
-
-  const total = tasks.length;
-
-  const completed = tasks.filter(t =>
-    t.status === "Hoàn thành").length;
-
-  const progress = tasks.filter(t =>
-    t.status === "Đang làm").length;
-
-  const overdue = tasks.filter(t =>
-    new Date(t.end) < new Date() &&
-    t.status !== "Hoàn thành").length;
-
-  const rate = total
-    ? Math.round((completed / total) * 100)
-    : 0;
-
-  totalTasks.innerText = total;
-  completedTasks.innerText = completed;
-  progressTasks.innerText = progress;
-  overdueTasks.innerText = overdue;
-  completionRate.innerText = rate + "%";
-
-  progressBar.style.width = rate + "%";
-}
-
-function renderWeek() {
-
-  const days = [
-    "Thứ Hai",
-    "Thứ Ba",
-    "Thứ Tư",
-    "Thứ Năm",
-    "Thứ Sáu",
-    "Thứ Bảy",
-    "Chủ Nhật"
-  ];
-
-  weekView.innerHTML = "";
-
-  days.forEach(day => {
-
-    const box = document.createElement("div");
-
-    box.className = "card min-h-[200px]";
-
-    box.innerHTML = `
-      <h3 class="font-bold mb-3">${day}</h3>
-      ${tasks.slice(0,3).map(t => `
-        <div class="bg-blue-50 p-2 rounded-lg mb-2 text-sm">
-          ${t.name}
-        </div>
-      `).join("")}
-    `;
-
-    weekView.appendChild(box);
-
-  });
-
-}
-
-function renderMonth() {
-
-  monthView.innerHTML = "";
-
-  for(let i=1;i<=35;i++) {
-
-    const box = document.createElement("div");
-
-    box.className =
-      "bg-white rounded-xl min-h-[100px] p-2 shadow";
-
-    box.innerHTML = `
-      <div class="font-bold mb-2">${i <= 31 ? i : ""}</div>
-
-      ${i <= tasks.length
-        ? `<div class="text-xs bg-blue-100 rounded p-1">
-            ${tasks[i-1].name}
-          </div>`
-        : ""}
-    `;
-
-    monthView.appendChild(box);
-  }
-}
-
-let chart;
-
-function renderChart() {
-
-  const ctx = document.getElementById('reportChart');
-
-  const completed = tasks.filter(t =>
-    t.status === "Hoàn thành").length;
-
-  const progress = tasks.filter(t =>
-    t.status === "Đang làm").length;
-
-  const pending = tasks.filter(t =>
-    t.status === "Chưa bắt đầu").length;
-
-  const pause = tasks.filter(t =>
-    t.status === "Tạm hoãn").length;
-
-  if(chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: [
-        'Hoàn thành',
-        'Đang làm',
-        'Chưa bắt đầu',
-        'Tạm hoãn'
-      ],
-      datasets: [{
-        label: 'Công việc',
-        data: [
-          completed,
-          progress,
-          pending,
-          pause
-        ]
-      }]
+        `;
+      });
     }
-  });
 
-}
+    function renderDashboard() {
 
-function renderAll() {
-  renderTasks();
-  renderDashboard();
-  renderWeek();
-  renderMonth();
-  renderChart();
-}
+      const total = tasks.length;
 
-function resetData() {
+      const completed = tasks.filter(t => t.status === "Hoàn thành").length;
 
-  if(confirm("Reset toàn bộ dữ liệu?")) {
+      const doing = tasks.filter(t => t.status === "Đang làm").length;
 
-    localStorage.removeItem("planflow_tasks");
+      const overdue = tasks.filter(t =>
+        new Date(t.deadline) < new Date() &&
+        t.status !== "Hoàn thành"
+      ).length;
 
-    location.reload();
-  }
-}
+      const rate = total
+        ? Math.round((completed / total) * 100)
+        : 0;
 
-renderAll();
+      totalTasks.innerText = total;
+      completedTasks.innerText = completed;
+      doingTasks.innerText = doing;
+      overdueTasks.innerText = overdue;
+      completionRate.innerText = rate + "%";
 
-new QRCode(document.getElementById("qrcode"), {
-  text: window.location.href,
-  width: 90,
-  height: 90
-});
+      progressPercent.innerText = rate + "%";
+      progressBar.style.width = rate + "%";
 
-</script>
+      renderCharts();
+    }
+
+    let statusChart, priorityChart, reportChart;
+
+    function renderCharts() {
+
+      const statusData = {
+        labels: ["Chưa bắt đầu", "Đang làm", "Hoàn thành", "Tạm hoãn"],
+        datasets: [{
+          data: [
+            tasks.filter(t => t.status === "Chưa bắt đầu").length,
+            tasks.filter(t => t.status === "Đang làm").length,
+            tasks.filter(t => t.status === "Hoàn thành").length,
+            tasks.filter(t => t.status === "Tạm hoãn").length,
+          ]
+        }]
+      };
+
+      const priorityData = {
+        labels: ["Cao", "Trung bình", "Thấp"],
+        datasets: [{
+          data: [
+            tasks.filter(t => t.priority === "Cao").length,
+            tasks.filter(t => t.priority === "Trung bình").length,
+            tasks.filter(t => t.priority === "Thấp").length,
+          ]
+        }]
+      };
+
+      if (statusChart) statusChart.destroy();
+      if (priorityChart) priorityChart.destroy();
+      if (reportChart) reportChart.destroy();
+
+      statusChart = new Chart(
+        document.getElementById("statusChart"),
+        {
+          type: "doughnut",
+          data: statusData
+        }
+      );
+
+      priorityChart = new Chart(
+        document.getElementById("priorityChart"),
+        {
+          type: "bar",
+          data: priorityData
+        }
+      );
+
+      reportChart = new Chart(
+        document.getElementById("reportChart"),
+        {
+          type: "pie",
+          data: statusData
+        }
+      );
+    }
+
+    function renderWeekView() {
+
+      const weekDays = [
+        "Thứ Hai",
+        "Thứ Ba",
+        "Thứ Tư",
+        "Thứ Năm",
+        "Thứ Sáu",
+        "Thứ Bảy",
+        "Chủ Nhật"
+      ];
+
+      weekView.innerHTML = "";
+
+      weekDays.forEach((day, index) => {
+
+        const today = new Date();
+        const first = today.getDate() - today.getDay() + 1;
+        const current = new Date(today.setDate(first + index));
+
+        const dateString = current.toISOString().split("T")[0];
+
+        const dayTasks = tasks.filter(
+          t => t.startDate <= dateString &&
+               t.deadline >= dateString
+        );
+
+        weekView.innerHTML += `
+
+          <div class="bg-slate-50 rounded-2xl p-3">
+
+            <div class="font-bold mb-3">
+              ${day}
+            </div>
+
+            <div class="space-y-2">
+
+              ${dayTasks.map(task => `
+                <div class="bg-white rounded-xl p-2 text-sm shadow-sm">
+                  <div class="font-semibold">${task.name}</div>
+                  <div class="text-xs text-slate-500">
+                    ${task.status}
+                  </div>
+                </div>
+              `).join("")}
+
+            </div>
+
+          </div>
+        `;
+      });
+    }
+
+    function renderCalendar() {
+
+      const calendar = document.getElementById("calendar");
+
+      calendar.innerHTML = "";
+
+      const now = new Date();
+
+      const year = now.getFullYear();
+      const month = now.getMonth();
+
+      const firstDay = new Date(year, month, 1);
+
+      let startDay = firstDay.getDay() - 1;
+      if (startDay < 0) startDay = 6;
+
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < startDay; i++) {
+        calendar.innerHTML += `<div></div>`;
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+
+        const date = new Date(year, month, day)
+          .toISOString()
+          .split("T")[0];
+
+        const dayTasks = tasks.filter(
+          t => t.startDate <= date &&
+               t.deadline >= date
+        );
+
+        calendar.innerHTML += `
+
+          <div class="calendar-day bg-slate-50 rounded-2xl p-2 overflow-auto">
+
+            <div class="font-bold mb-2">
+              ${day}
+            </div>
+
+            <div class="space-y-1">
+
+              ${dayTasks.map(task => `
+                <div class="bg-white rounded-lg p-1 text-xs shadow-sm">
+                  ${task.name}
+                </div>
+              `).join("")}
+
+            </div>
+
+          </div>
+        `;
+      }
+    }
+
+    function renderAll() {
+      renderTasks();
+      renderDashboard();
+      renderWeekView();
+      renderCalendar();
+    }
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+
+      btn.addEventListener("click", () => {
+
+        document.querySelectorAll(".tab-btn").forEach(b => {
+          b.classList.remove("active-tab");
+          b.classList.add("bg-slate-100");
+        });
+
+        btn.classList.add("active-tab");
+        btn.classList.remove("bg-slate-100");
+
+        const tab = btn.dataset.tab;
+
+        document.querySelectorAll(".tab-content")
+          .forEach(section => {
+            section.classList.add("hidden");
+          });
+
+        document.getElementById(tab)
+          .classList.remove("hidden");
+      });
+    });
+
+    renderAll();
+
+  </script>
 
 </body>
 </html>
